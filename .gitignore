@@ -343,6 +343,8 @@ healthchecksdb
 *.tfstate
 *.tfstate.backup
 *.tfstate.*
+*vars.tf
+*Terraform\Azure
 
 # Terraform crash logs
 crash.log
