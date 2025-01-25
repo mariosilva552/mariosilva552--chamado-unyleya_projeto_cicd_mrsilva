@@ -6,70 +6,51 @@
 trigger:
 - main
 
-pool:
-  vmImage: 'windows-latest'
-
-# Command line
-# Run a command line script using Bash on Linux and macOS and cmd.exe on Windows
-
-
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
+jobs:
+- job: BuildAndTest
+  displayName: 'Build and Test on Windows'
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - task: CmdLine@2
+    inputs:
+      script: 'mkdir d:\a\1\MobEAD'
 
+  - task: NuGetToolInstaller@1
 
-steps:
+  - task: NuGetCommand@2
+    inputs:
+      restoreSolution: '$(solution)'
 
-# Command line
-# Run a command line script using Bash on Linux and macOS and cmd.exe on Windows
+  - task: VSBuild@1
+    inputs:
+      solution: '$(solution)'
+      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DeployIisAppPath="Default Web Site"'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
-- task: CmdLine@2
-  inputs:
-    script: 'mkdir d:\a\1\MobEAD' 
-    #workingDirectory: # Optional
-    #failOnStderr: false # Optional
+  - task: VSTest@2
+    inputs:
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
-- task: NuGetToolInstaller@1
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+- job: DockerBuild
+  displayName: 'Build and Push Docker Image on Linux'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: Docker@2
+    inputs:
+      containerRegistry: 'DockerCredencial'
+      repository: 'mariosilva552/unyleya_projeto_cicd'
+      command: 'buildAndPush'
+      Dockerfile: '**/Dockerfile'
 
-
-#- task: SonarQubePrepare@4
-#  inputs:
-#    SonarQube: 'Sonarqube Osanam Azure'
-#    scannerMode: 'CLI'
-#    configMode: 'manual'
-#    cliProjectKey: 'Unyleya_-_DevOps_Unyleya_-_DevOps'
-#    cliProjectName: 'Unyleya - DevOps'
-#    cliSources: '$(System.DefaultWorkingDirectory)'
-#
-#- powershell: |
-#    $params = "$env:SONARQUBE_SCANNER_PARAMS" -replace '"sonar.branch.name":"[\w/,-.]*"\,?'
-#    Write-Host "##vso[task.setvariable variable=SONARQUBE_SCANNER_PARAMS]$params"
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-#- task: SonarQubeAnalyze@4
-
-#- task: SonarQubePublish@4
-#  inputs:
-#    pollingTimeoutSec: '300'
-
-- task: PublishPipelineArtifact@1
-  inputs:
-       artifactName: # 'drop'
-
- 
-
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'drop'
