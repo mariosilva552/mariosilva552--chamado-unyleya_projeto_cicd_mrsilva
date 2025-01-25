@@ -345,6 +345,8 @@ healthchecksdb
 *.tfstate.*
 *vars.tf
 *Terraform\Azure
+*.tfvars
+secrets.env
 
 # Terraform crash logs
 crash.log
