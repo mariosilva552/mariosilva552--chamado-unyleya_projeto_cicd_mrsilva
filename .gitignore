@@ -338,3 +338,42 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# Terraform state files
+*.tfstate
+*.tfstate.backup
+*.tfstate.*
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+# Terraform variables files (containing sensitive data)
+*.tfvars
+*.tfvars.json
+
+# Terraform plan files
+*.plan
+
+# Terraform module and provider cache
+.terraform/
+.terraform.lock.hcl
+**/.terraform/
+
+# Terraform override files (used for local development)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore generated JSON output
+terraform.tfstate.json
+
+# Ignore any temporary or debug-related files
+*.backup
+*.log
+.DS_Store
+
+# Ignore personal CLI settings
+.terraformrc
+terraform.rc
