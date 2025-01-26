@@ -356,6 +356,8 @@ secrets.env
 .terraform.lock.hcl
 *.terraform.lock.hcl
 *terraform.tfvars
+tfc-getting-started
+*tfc-getting-started
 
 # Terraform crash logs
 crash.log
