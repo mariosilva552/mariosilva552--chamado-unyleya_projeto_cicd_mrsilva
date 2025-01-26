@@ -17,10 +17,6 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
-  - task: CmdLine@2
-    inputs:
-      script: 'mkdir d:\a\1\MobEAD'
-
   - task: NuGetToolInstaller@1
 
   - task: NuGetCommand@2
@@ -39,6 +35,20 @@ jobs:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
 
+  - task: ArchiveFiles@2
+    displayName: 'Archive files'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      replaceExistingArchive: true
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      artifactName: 'drop'
+
 - job: DockerBuild
   displayName: 'Build and Push Docker Image on Linux'
   pool:
@@ -51,6 +61,19 @@ jobs:
       command: 'buildAndPush'
       Dockerfile: '**/Dockerfile'
 
-  - task: PublishPipelineArtifact@1
-    inputs:
-      artifactName: 'drop'
+- deployment: Deploy
+  displayName: 'Deploy to Azure WebApp'
+  environment: 'production'
+  pool:
+    vmImage: 'ubuntu-latest'
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: AzureRmWebAppDeployment@4
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'Assinatura do Azure 1(47afe951-d6d3-42ab-8ca3-3fe763b63373)'
+            appType: 'webApp'
+            WebAppName: 'mrsilvaApp'
+            packageForLinux: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
