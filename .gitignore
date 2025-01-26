@@ -355,6 +355,7 @@ healthchecksdb
 secrets.env
 .terraform.lock.hcl
 *.terraform.lock.hcl
+*terraform.tfvars
 
 # Terraform crash logs
 crash.log

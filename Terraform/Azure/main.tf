@@ -16,6 +16,17 @@ provider "azurerm" {
   tenant_id       = var.tenant_id
 }
 
+terraform {
+  cloud {
+
+    organization = "chamado-unyleya_projeto_cicd_mrsilva"
+
+    workspaces {
+      name = "Unyleya_mrsilva"
+    }
+  }
+}
+
 resource "azurerm_resource_group" "example" {
   name     = "example-resources"
   location = "West Europe"
@@ -71,17 +82,19 @@ resource "azurerm_network_interface_security_group_association" "example" {
 }
 
 resource "azurerm_linux_virtual_machine" "example" {
-  name                = "example-machine"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  size                = "Standard_F2"
-  admin_username      = "mrsilva"
-  disable_password_authentication = true
+  name                            = "example-machine"
+  resource_group_name             = azurerm_resource_group.example.name
+  location                        = azurerm_resource_group.example.location
+  size                            = "Standard_F2"
+  admin_username                  = "mrsilva"
+  disable_password_authentication = false
+  admin_password                  = var.admin_password
+  // disable_password_authentication = true
 
-  admin_ssh_key {
-    username   = "mrsilva"
-    public_key = file("C:/Users/mrsilva/.ssh/id_rsa.pub")
-  }
+  //  admin_ssh_key {
+  //    username   = "mrsilva"
+  //    public_key = file("C:/Users/mrsilva/.ssh/id_rsa.pub")
+  //  }
 
   network_interface_ids = [
     azurerm_network_interface.example.id,
