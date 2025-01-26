@@ -15,7 +15,7 @@ variables:
   functionAppName: ''
 
   # Environment name
-  environmentName: ''
+  environmentName: 'appmrsilva'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
