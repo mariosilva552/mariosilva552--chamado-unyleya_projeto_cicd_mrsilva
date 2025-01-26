@@ -306,6 +306,12 @@ __pycache__/
 # tools/**
 # !tools/packages.config
 
+#SSH
+*id_rsa
+*id_rsa.pub
+id_rsa.pub
+id_rsa
+
 # Tabs Studio
 *.tss
 
