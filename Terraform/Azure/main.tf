@@ -7,6 +7,7 @@ terraform {
   }
 }
 
+# Configure the Microsoft Azure Provider
 provider "azurerm" {
   features {}
 
@@ -14,17 +15,6 @@ provider "azurerm" {
   client_id       = var.client_id
   client_secret   = var.client_secret
   tenant_id       = var.tenant_id
-}
-
-terraform {
-  cloud {
-
-    organization = "chamado-unyleya_projeto_cicd_mrsilva"
-
-    workspaces {
-      name = "Unyleya_mrsilva"
-    }
-  }
 }
 
 resource "azurerm_resource_group" "example" {
@@ -58,47 +48,22 @@ resource "azurerm_network_interface" "example" {
   }
 }
 
-resource "azurerm_network_security_group" "example" {
-  name                = "example-nsg"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  security_rule {
-    name                       = "AllowSSH"
-    priority                   = 1001
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "22"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-}
-
-resource "azurerm_network_interface_security_group_association" "example" {
-  network_interface_id      = azurerm_network_interface.example.id
-  network_security_group_id = azurerm_network_security_group.example.id
-}
-
 resource "azurerm_linux_virtual_machine" "example" {
-  name                            = "example-machine"
-  resource_group_name             = azurerm_resource_group.example.name
-  location                        = azurerm_resource_group.example.location
-  size                            = "Standard_F2"
-  admin_username                  = "mrsilva"
-  disable_password_authentication = false
-  admin_password                  = var.admin_password
-  // disable_password_authentication = true
-
-  //  admin_ssh_key {
-  //    username   = "mrsilva"
-  //    public_key = file("C:/Users/mrsilva/.ssh/id_rsa.pub")
-  //  }
+  name                = "example-machine"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  size                = "Standard_F2"
+  admin_username      = "mrsilva"
+  disable_password_authentication = true
 
   network_interface_ids = [
     azurerm_network_interface.example.id,
   ]
+
+  admin_ssh_key {
+    username   = "mrsilva"
+    public_key = file("C:/Users/mrsilva/.ssh/id_rsa.pub")
+  }
 
   os_disk {
     caching              = "ReadWrite"
