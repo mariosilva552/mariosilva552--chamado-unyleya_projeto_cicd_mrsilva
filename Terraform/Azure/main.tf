@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-# Configure the Microsoft Azure Provider
+# Configuração do Provider Azure
 provider "azurerm" {
   features {}
 
@@ -17,63 +17,74 @@ provider "azurerm" {
   tenant_id       = var.tenant_id
 }
 
-resource "azurerm_resource_group" "example" {
-  name     = "example-resources"
+# Criar Resource Groups para os dois ambientes
+resource "azurerm_resource_group" "desenvolvimento" {
+  name     = "desenvolvimento-dev-rg"
   location = "West Europe"
 }
 
-resource "azurerm_virtual_network" "example" {
-  name                = "example-network"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+resource "azurerm_resource_group" "producao" {
+  name     = "producao-app-rg"
+  location = "West Europe"
 }
 
-resource "azurerm_subnet" "example" {
-  name                 = "internal"
-  resource_group_name  = azurerm_resource_group.example.name
-  virtual_network_name = azurerm_virtual_network.example.name
-  address_prefixes     = ["10.0.2.0/24"]
+# Criar um Service Plan para cada ambiente
+resource "azurerm_service_plan" "desenvolvimento" {
+  name                = "desenvolvimento-dev-service-plan"
+  resource_group_name = azurerm_resource_group.desenvolvimento.name
+  location            = azurerm_resource_group.desenvolvimento.location
+  os_type             = "Linux"
+  sku_name            = "B1"
 }
 
-resource "azurerm_network_interface" "example" {
-  name                = "example-nic"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+resource "azurerm_service_plan" "producao" {
+  name                = "producao-app-service-plan"
+  resource_group_name = azurerm_resource_group.producao.name
+  location            = azurerm_resource_group.producao.location
+  os_type             = "Linux"
+  sku_name            = "B1"
+}
 
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.example.id
-    private_ip_address_allocation = "Dynamic"
+# Criar os App Services para cada ambiente com os nomes corretos
+resource "azurerm_linux_web_app" "desenvolvimento" {
+  name                = "desenvolvimento-dev"
+  resource_group_name = azurerm_resource_group.desenvolvimento.name
+  location            = azurerm_resource_group.desenvolvimento.location
+  service_plan_id     = azurerm_service_plan.desenvolvimento.id
+
+  depends_on = [azurerm_service_plan.desenvolvimento]
+
+  site_config {
+    always_on = true
+  }
+
+  app_settings = {
+    "WEBSITE_RUN_FROM_PACKAGE" = "1"
   }
 }
 
-resource "azurerm_linux_virtual_machine" "example" {
-  name                = "example-machine"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  size                = "Standard_F2"
-  admin_username      = "mrsilva"
-  disable_password_authentication = true
+resource "azurerm_linux_web_app" "producao" {
+  name                = "devopsmrsilva" # 🔹 Alterado para corresponder ao nome esperado no erro do Azure DevOps
+  resource_group_name = azurerm_resource_group.producao.name
+  location            = azurerm_resource_group.producao.location
+  service_plan_id     = azurerm_service_plan.producao.id
 
-  network_interface_ids = [
-    azurerm_network_interface.example.id,
-  ]
+  depends_on = [azurerm_service_plan.producao, azurerm_resource_group.producao] # 🔹 Garantir que esses recursos existam antes
 
-  admin_ssh_key {
-    username   = "mrsilva"
-    public_key = file("C:/Users/mrsilva/.ssh/id_rsa.pub")
+  site_config {
+    always_on = true
   }
 
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
+  app_settings = {
+    "WEBSITE_RUN_FROM_PACKAGE" = "1"
   }
+}
 
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
-    version   = "latest"
-  }
+# Criar saídas para exibir as URLs dos App Services
+output "desenvolvimento_app_service_url" {
+  value = azurerm_linux_web_app.desenvolvimento.default_hostname
+}
+
+output "producao_app_service_url" {
+  value = azurerm_linux_web_app.producao.default_hostname
 }
