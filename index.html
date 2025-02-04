@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!-->
 <html lang="en-gb">
 <!--<![endif]-->
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -15,6 +16,7 @@
     <link href="mine.css" rel="stylesheet" />
     <!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 </head>
+
 <body>
 
     <div id="sf-wrapper">
@@ -25,7 +27,7 @@
         <nav class="navbar navbar-fixed-top">
             <nav class="navbar-inner">
                 <section class="container navegacao-topo">
-                    <a class="brand">MobEAD - UNYLEYA - Engenharia DevOps</a>
+                    <a class="brand">MobEAD - UNYLEYA - Engenharia DevOps Mário Silva</a>
                     <ul class="nav">
                         <li class="active"><a href="#"><i class="icon-home" data-bind="click:openTestList"></i></a></li>
                     </ul>
@@ -40,7 +42,8 @@
                     <div class="span8 pagination-centered ">
                         <p style="text-align: center;">Select your test!</p>
                         <ul data-bind="foreach: Tests">
-                            <li class="media well well-small itemLista" data-bind="click:$parent.selectTest"><a href="#" data-bind="text:Exam"></a></li>
+                            <li class="media well well-small itemLista" data-bind="click:$parent.selectTest"><a href="#"
+                                    data-bind="text:Exam"></a></li>
                         </ul>
                     </div>
                 </article>
@@ -55,32 +58,36 @@
                         </div>
                         <div class="span6 respostas">
                             <ul>
-                                <li class="media well" data-bind="css: { 'well-selecionado': NumberAnswered() == 1 },click:function(data,event){ selectAlternative(1); }">
-                                    <span class="indice">a  
+                                <li class="media well"
+                                    data-bind="css: { 'well-selecionado': NumberAnswered() == 1 },click:function(data,event){ selectAlternative(1); }">
+                                    <span class="indice">a
                                     </span>
                                     <div class="questao">
                                         <p data-bind="text: AlternativeOne"></p>
                                     </div>
                                 </li>
-                                <li class="media well" data-bind="css: { 'well-selecionado': NumberAnswered() == 2 },click:function(data,event){ selectAlternative(2); }">
+                                <li class="media well"
+                                    data-bind="css: { 'well-selecionado': NumberAnswered() == 2 },click:function(data,event){ selectAlternative(2); }">
                                     <div class="indice">
-                                        b 
+                                        b
                                     </div>
                                     <div class="questao">
                                         <p data-bind="text: AlternativeTwo"></p>
                                     </div>
                                 </li>
-                                <li class="media well" data-bind="css: { 'well-selecionado': NumberAnswered() == 3 },click:function(data,event){ selectAlternative(3); }">
+                                <li class="media well"
+                                    data-bind="css: { 'well-selecionado': NumberAnswered() == 3 },click:function(data,event){ selectAlternative(3); }">
                                     <div class="indice">
-                                        c 
+                                        c
                                     </div>
                                     <div class="questao">
                                         <p data-bind="text: AlternativeThree"></p>
                                     </div>
                                 </li>
-                                <li class="media well ultimo" data-bind="css: { 'well-selecionado': NumberAnswered() == 4 },click:function(data,event){ selectAlternative(4); }">
+                                <li class="media well ultimo"
+                                    data-bind="css: { 'well-selecionado': NumberAnswered() == 4 },click:function(data,event){ selectAlternative(4); }">
                                     <div class="indice">
-                                        d 
+                                        d
                                     </div>
                                     <div class="questao">
                                         <p data-bind="text: AlternativeFour"></p>
@@ -96,8 +103,10 @@
                         <div class="span6 well itemLista">
                             <h2 data-bind="ifnot:Result">Novo ajuste para ver se está tudo certo para a Osanam :-)</h2>
                             <h2 data-bind="if:Result">You Nailed it!!</h2>
-                            <h2>You've hit <strong data-bind="text:ActualCorrectAmount"></strong>&nbsp;out of <span data-bind="text:QuestionsAmount + 1"></span>&nbsp;questions!</h2>
-                            <h2 data-bind="ifnot:Result">You needed <span data-bind="text:MinCorrectAmount"></span>&nbsp;hits to succeed.</h2>
+                            <h2>You've hit <strong data-bind="text:ActualCorrectAmount"></strong>&nbsp;out of <span
+                                    data-bind="text:QuestionsAmount + 1"></span>&nbsp;questions!</h2>
+                            <h2 data-bind="ifnot:Result">You needed <span
+                                    data-bind="text:MinCorrectAmount"></span>&nbsp;hits to succeed.</h2>
                         </div>
                     </article>
                 </div>
@@ -109,10 +118,13 @@
 
     <footer id="footer">
         <div class="pull-right navegacao" data-bind="with: CurrentTest">
-            <div class="inline" data-bind="visible:!ShowResult()"><span data-bind="text:CurrentQuestion() + 1"></span>/<span data-bind="text:QuestionsAmount + 1"></span></div>
+            <div class="inline" data-bind="visible:!ShowResult()"><span
+                    data-bind="text:CurrentQuestion() + 1"></span>/<span data-bind="text:QuestionsAmount + 1"></span>
+            </div>
             <!--<a href="#"><i class="icon-home" data-bind="click:openTestList"></i></a>-->
             <a href="#"><i class="icon-circle-arrow-left" data-bind="click:previousQuestion"></i></a>
-            <div class="inline" data-bind="visible:!ShowResult()"><a href="#"><i class="icon-circle-arrow-right" data-bind="click:nextQuestion"></i></a></div>
+            <div class="inline" data-bind="visible:!ShowResult()"><a href="#"><i class="icon-circle-arrow-right"
+                        data-bind="click:nextQuestion"></i></a></div>
             <a href="#"><i class="icon-check" data-bind="click:endTest"></i></a>
         </div>
     </footer>
@@ -135,4 +147,5 @@
   </script-->
 
 </body>
+
 </html>
