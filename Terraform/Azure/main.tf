@@ -80,13 +80,29 @@ resource "azurerm_linux_web_app" "producao" {
   }
 }
 
-# Criar um IP Público gratuito para produção
+# Criar um IP Público para produção (SKU Standard, compatível com Application Gateway Standard_v2)
 resource "azurerm_public_ip" "producao" {
   name                = "producao-public-ip"
   resource_group_name = azurerm_resource_group.producao.name
   location            = azurerm_resource_group.producao.location
-  allocation_method   = "Dynamic"  # Gratuito apenas no modo dinâmico
-  sku                 = "Basic"    # Gratuito apenas no SKU Básico
+  allocation_method   = "Static"   # Obrigatório para SKU Standard
+  sku                 = "Standard" # Corrigido para ser compatível com Standard_v2
+}
+
+# Criar uma Virtual Network para a Subnet do Application Gateway
+resource "azurerm_virtual_network" "producao" {
+  name                = "producao-vnet"
+  location            = azurerm_resource_group.producao.location
+  resource_group_name = azurerm_resource_group.producao.name
+  address_space       = ["10.0.0.0/16"]
+}
+
+# Criar a Subnet para o Application Gateway
+resource "azurerm_subnet" "producao" {
+  name                 = "producao-subnet"
+  resource_group_name  = azurerm_resource_group.producao.name
+  virtual_network_name = azurerm_virtual_network.producao.name
+  address_prefixes     = ["10.0.1.0/24"]
 }
 
 # Criar um Application Gateway para expor o App Service com o IP Público
@@ -103,7 +119,7 @@ resource "azurerm_application_gateway" "producao" {
 
   gateway_ip_configuration {
     name      = "gateway-ip-config"
-    subnet_id = azurerm_subnet.producao.id  # Necessário criar uma sub-rede
+    subnet_id = azurerm_subnet.producao.id # Agora existe a sub-rede
   }
 
   frontend_ip_configuration {
@@ -141,7 +157,10 @@ resource "azurerm_application_gateway" "producao" {
     http_listener_name         = "http-listener"
     backend_address_pool_name  = "backend-pool"
     backend_http_settings_name = "http-backend"
+    priority                   = 100
   }
+
+  depends_on = [azurerm_subnet.producao, azurerm_public_ip.producao]
 }
 
 # Criar saídas para exibir as URLs dos App Services e o IP público
